@@ -3,127 +3,153 @@ drop schema if exists model cascade;
 create schema if not exists model;
 
 -- ************************************** customers
-
-CREATE TABLE model.customers
+drop table if exists model.customers cascade;
+create table model.customers
 (
- customer_id   varchar(50) NOT NULL,
- segment       varchar(50) NOT NULL,
- customer_name varchar(100) NOT NULL,
- CONSTRAINT PK_96 PRIMARY KEY ( customer_id )
+ customer_id   varchar(50) not null,
+ segment       varchar(50) not null,
+ customer_name varchar(100) not null,
+ constraint PK_96 primary key (customer_id)
 );
 
 -- ************************************** geography
-
-CREATE TABLE model.geography
+drop table if exists model.geography cascade;
+create table model.geography
 (
- geo_id      serial NOT NULL,
- country     varchar(50) NOT NULL,
- region      varchar(50) NOT NULL,
- "state"       varchar(100) NOT NULL,
- city        varchar(100) NOT NULL,
- postal_code serial NOT NULL,
- CONSTRAINT PK_36 PRIMARY KEY ( geo_id )
+ geo_id      serial not null,
+ country     varchar(50) not null,
+ region      varchar(50) not null,
+ "state"       varchar(100) not null,
+ city        varchar(100) not null,
+ postal_code serial not null,
+ CONSTRAINT PK_36 PRIMARY KEY (geo_id)
 );
 
 
 -- ************************************** order_calendar
-
-CREATE TABLE model.order_calendar
+drop table if exists model.order_calendar cascade;
+create table model.order_calendar
 (
- order_date date NOT NULL,
- year       serial NOT NULL,
- quarter    serial NOT NULL,
- month      serial NOT NULL,
- week_day   serial NOT NULL,
- day        serial NOT NULL,
- CONSTRAINT PK_5 PRIMARY KEY ( order_date )
+ order_date date not null,
+ year       serial not null,
+ quarter    serial not null,
+ month      serial not null,
+ week_day   serial not null,
+ day        serial not null,
+ constraint PK_5 primary key (order_date)
 );
+--deleting rows
+truncate table model.order_calendar;
+--
+insert into model.order_calendar 
+select 
+distinct order_date,
+date_part('year' , order_date) as year,
+date_part('quarter' , order_date) as quarter,
+date_part('month' , order_date) as month,
+extract(isodow from order_date) as week_day,
+date_part('day' , order_date) as day
+from public.orders
+order by order_date;
+
 
 -- ************************************** ship_calendar
-
-CREATE TABLE model.ship_calendar
+--creating a table
+drop table if exists model.ship_calendar cascade;
+create table model.ship_calendar
 (
- ship_date date NOT NULL,
- year      serial NOT NULL,
- quarter   serial NOT NULL,
- month     serial NOT NULL,
- week_day  serial NOT NULL,
- day       serial NOT NULL,
- CONSTRAINT PK_6 PRIMARY KEY ( ship_date )
+ ship_date date not null,
+ year      serial not null,
+ quarter   serial not null,
+ month     serial not null,
+ week_day  serial not null,
+ day       serial not null,
+ constraint PK_6 primary key (ship_date)
 );
 
 -- ************************************** shipment
-
-CREATE TABLE model.shipment
+--creating a table
+drop table if exists model.shipment cascade;
+create table model.shipment
 (
- ship_id   serial NOT NULL,
- ship_mode varchar(50) NOT NULL,
- CONSTRAINT PK_80 PRIMARY KEY ( ship_id )
+ ship_id   serial not null,
+ ship_mode varchar(50) not null,
+ constraint PK_80 primary key (ship_id)
 );
 
+--deleting rows
+truncate table model.shipment;
 
--- ************************************** products
+--generating ship_id and inserting ship_mode from orders
+insert into model.shipment 
+select
+100+row_number() over(),
+ship_mode
+from (select
+	  distinct ship_mode
+	  from public.orders) a;
+select * from model.shipment
 
-CREATE TABLE model.products
+create table model.products
 (
- product_id   varchar(50) NOT NULL,
- category     varchar(50) NOT NULL,
- sub_category varchar(50) NOT NULL,
- product_name varchar(100) NOT NULL,
- CONSTRAINT PK_87 PRIMARY KEY ( product_id )
+ product_id   varchar(50) not null,
+ category     varchar(50) not null,
+ sub_category varchar(50) not null,
+ product_name varchar(100) not null,
+ constraint PK_87 primary key (product_id)
 );
 
 -- ************************************** sales_fact
 
-CREATE TABLE model.sales_fact
+create table model.sales_fact
 (
- order_date  date NOT NULL,
- geo_id      serial NOT NULL,
- ship_date   date NOT NULL,
- ship_id     serial NOT NULL,
- product_id  varchar(50) NOT NULL,
- customer_id varchar(50) NOT NULL,
- sales       numeric NOT NULL,
- discount    numeric NOT NULL,
- quantity    integer NOT NULL,
- profit      numeric NOT NULL,
- order_id    varchar(50) NOT NULL,
- row_id      integer NOT NULL,
- CONSTRAINT PK_17 PRIMARY KEY ( row_id ),
- CONSTRAINT FK_99 FOREIGN KEY ( customer_id ) REFERENCES model.customers ( customer_id ),
- CONSTRAINT FK_20 FOREIGN KEY ( order_date ) REFERENCES model.order_calendar ( order_date ),
- CONSTRAINT FK_31 FOREIGN KEY ( ship_date ) REFERENCES model.ship_calendar ( ship_date ),
- CONSTRAINT FK_75 FOREIGN KEY ( geo_id ) REFERENCES model.geography ( geo_id ),
- CONSTRAINT FK_82 FOREIGN KEY ( ship_id ) REFERENCES model.shipment ( ship_id ),
- CONSTRAINT FK_91 FOREIGN KEY ( product_id ) REFERENCES model.products ( product_id )
+ order_date  date not null,
+ geo_id      serial not null,
+ ship_date   date not null,
+ ship_id     serial not null,
+ product_id  varchar(50) not null,
+ customer_id varchar(50) not null,
+ sales       numeric not null,
+ discount    numeric not null,
+ quantity    integer not null,
+ profit      numeric not null,
+ order_id    varchar(50) not null,
+ row_id      integer not null,
+ constraint PK_17 primary key (row_id),
+ constraint FK_99 foreign key (customer_id) references model.customers (customer_id),
+ constraint FK_20 foreign key (order_date) references model.order_calendar (order_date),
+ constraint FK_31 foreign key (ship_date) references model.ship_calendar (ship_date),
+ constraint FK_75 foreign key (geo_id) references model.geography (geo_id),
+ constraint FK_82 foreign key (ship_id) references model.shipment (ship_id),
+ constraint FK_91 foreign key (product_id) references model.products (product_id)
 );
 
-CREATE INDEX fkIdx_101 ON model.sales_fact
+create index fkIdx_101 on model.sales_fact
 (
  customer_id
 );
 
-CREATE INDEX fkIdx_22 ON model.sales_fact
+create index fkIdx_22 on model.sales_fact
 (
  order_date
 );
 
-CREATE INDEX fkIdx_33 ON model.sales_fact
+create index fkIdx_33 on model.sales_fact
 (
  ship_date
 );
 
-CREATE INDEX fkIdx_77 ON model.sales_fact
+create index fkIdx_77 on model.sales_fact
 (
  geo_id
 );
 
-CREATE INDEX fkIdx_84 ON model.sales_fact
+create index fkIdx_84 on model.sales_fact
 (
  ship_id
 );
 
-CREATE INDEX fkIdx_93 ON model.sales_fact
+create index fkIdx_93 on model.sales_fact
 (
  product_id
 );
