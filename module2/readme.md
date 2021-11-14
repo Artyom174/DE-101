@@ -4,3 +4,12 @@
 * Написать [SQL-запросы](https://github.com/Artyom174/DE-101/blob/main/module2/sql_query.ipynb), чтобы ответить на вопросы из Модуля 01.
 
 скрипт для SQL-запросов из postgres с помощью python лежит [тут](https://github.com/Artyom174/DE-101/blob/main/module2/script_for_postgres.py)
+
+# 2.4 Модели Данных
+необходимо создать модель данных для данных [магазина](https://github.com/Data-Learn/data-engineering/blob/master/DE-101%20Modules/Module01/DE%20-%20101%20Lab%201.1/Sample%20-%20Superstore.xls). Для начала создадим:
+* [концептуальную модель](https://github.com/Artyom174/DE-101/blob/main/module2/%D0%BA%D0%BE%D0%BD%D1%86%D0%B5%D0%BF%D1%82%D1%83%D0%B0%D0%BB%D1%8C%D0%BD%D0%B0%D1%8F_%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C.png)
+* [логическую модель](https://github.com/Artyom174/DE-101/blob/main/module2/%D0%BB%D0%BE%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C.png)
+* [физическую модель](https://github.com/br1zz/DE-101/blob/main/Module02/files/2.4/physical.jpg)
+
+Выбранная модель данных состоит из двух типов таблиц: одной таблицы фактов и нескольких таблиц измерений. [Создание таблиц](https://github.com/Artyom174/DE-101/blob/main/module2/ddl_superstore.sql) по данной схеме.
+[SQL-скрипт]() наполнение таблиц данными.
