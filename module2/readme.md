@@ -11,5 +11,4 @@
 * [логическую модель](https://github.com/Artyom174/DE-101/blob/main/module2/%D0%BB%D0%BE%D0%B3%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F_%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D1%8C.png)
 * [физическую модель](https://github.com/br1zz/DE-101/blob/main/Module02/files/2.4/physical.jpg)
 
-Выбранная модель данных состоит из двух типов таблиц: одной таблицы фактов и нескольких таблиц измерений. [Создание таблиц](https://github.com/Artyom174/DE-101/blob/main/module2/ddl_superstore.sql) по данной схеме.
-[SQL-скрипт]() наполнение таблиц данными.
+Создание [данной схемы](https://github.com/Artyom174/DE-101/blob/main/module2/ddl_superstore.sql) данных по физической модели. 
